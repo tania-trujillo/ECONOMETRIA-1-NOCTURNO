@@ -6,10 +6,9 @@
 #######                                                                 ######
 ##############################################################################
 
-#By: Nicolás García Peñaloza (Docente)
-# ngarcia1@uniquindio.edu.co
-#nicolasgp0109@gmail.com
-#+57 312 285 3832
+#By: Tania Trujillo Escalante
+#tania.trujilloe@uqvirtual.edu.co
+
 
 print("Introducción a R. (Rstudio)")
 browseURL(url = "https://cran.r-project.org/doc/FAQ/R-FAQ.html", browser = getOption("browser"))
