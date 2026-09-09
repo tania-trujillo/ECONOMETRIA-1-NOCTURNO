@@ -160,7 +160,7 @@ rm()
 N = c(2,1,3,20)
 N
 N[4]
-N[2] = 5
+N[2] == 5
 N
 rm(N)
 
@@ -189,13 +189,13 @@ c
 z
 
 print("¿a es igual x?")
-# a == x
+a == x
 
 print("¿b es igual c?")
-#b == c
+b == c
 
 print("¿z es igual c?")
-#Z==c
+Z==c
 
 print("¿OB es igual HOLA_1?")
 OB == HOLA_1
@@ -205,6 +205,9 @@ print("¿UNIVERSIDAD es igual U_UNIVERSIDAD?")
 
 UNIVERSIDAD == U_UNIVERSIDAD
 
+UNIVERSIDAD
+
+U_UNIVERSIDAD
 
 print("Hagamos operaciones a nuestros vectores")
 z+2
