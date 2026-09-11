@@ -29,6 +29,7 @@ install.packages("descr")
 install.packages("splitstackshape")
 install.packages("e1071")
 
+
 library("skimr")
 library("readxl")
 library("stringr")
@@ -40,16 +41,26 @@ library("rstatix")
 library("descr")
 library("splitstackshape")
 library("e1071")
+library(dplyr)
+library(tidyr)
 
 ## Cargamos la base de datos
 
 DATA_INGRESOS <- read_csv("C:/Users/Tata/Desktop/ARCHIVO R DATA INGRESOS/DATA_INGRESOS/DATA_INGRESOS.csv")
 
 
-# Descriptivo
+# Descriptivo ----
 head(DATA_INGRESOS)
 str(DATA_INGRESOS , LIST.LEN = 492)
 skimr::skim(DATA_INGRESOS)
+
+##Depurar base de datos ----
+DATA_INGRESOS = DATA_INGRESOS |> dplyr:: filter( OCI == 1)
+
+table(DATA_INGRESOS$OCI , useNA = "always")
+
+summary(DATA_INGRESOS$INGLABO)
+
 
 # Analisis descriptivo: Indicadores de posición y centro -----
 DATA_INGRESOS |> dplyr::group_by(1) |> mutate( INGLABO = replace_na(INGLABO , replace = 0) ) |> summarise( 
@@ -61,25 +72,10 @@ DATA_INGRESOS |> dplyr::group_by(1) |> mutate( INGLABO = replace_na(INGLABO , re
   Q3_INGLABO = quantile(INGLABO , c(0.75) , na.rm = TRUE ),
   rango_q_INGLABO = IQR(INGLABO) ,
   max_INGLABO = max(INGLABO)
-)
-
-### Indicadores de dispersión
+  )
 
 
-
-
-## Analisis descriptivo
-### Indicadores de posición y centro -----
-DATA_INGRESOS |> dplyr::group_by(1) |> mutate( INGLABO = replace_na(INGLABO , replace = 0) ) |> dplyr::summarise( 
-  median_INGLABO =  median(INGLABO) , 
-  mean_INGLABO = mean(INGLABO) ,
-  rango_medio_INGLABO = ((max(INGLABO) - min(INGLABO))/2 ) , 
-  min_INGLABO = min(INGLABO) ,
-  Q1_INGLABO = quantile(INGLABO , c(0.25) , na.rm = TRUE ) ,
-  Q3_INGLABO = quantile(INGLABO , c(0.75) , na.rm = TRUE ),
-  rango_q_INGLABO = IQR(INGLABO) ,
-  max_INGLABO = max(INGLABO)
-)
+library(e1071)
 
 ### Indicadores de dispersión
 DATA_INGRESOS |> dplyr::group_by(1) |> mutate( INGLABO = replace_na(INGLABO , replace = 0) ) |> dplyr::summarise(
