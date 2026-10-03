@@ -1,0 +1,144 @@
+---
+title: "regresion"
+output: html_document
+---
+
+################################################################### 
+
+###### 
+
+# UNIVERSIDAD DEL QUINDÍO
+
+# PROGRAMA DE ECONOMIA
+
+# ECONOMETRÍA I
+
+###### 
+
+################################################################### 
+
+# BY: tania Trujillo Escalante- David Patiño
+
+## Quizz ----
+
+# Paquetes o librerias ----
+
+library(readxl) library(dplyr)
+
+# Cargar base de datos ----
+
+DATA \<- read_excel("C:/Users/Tata/Desktop/TRABAJO ECONOMETRIA/ECONOMETRIA-1-NOCTURNO/QUIZ REGRESION LINEAL/Beta_estimado.xlsx", sheet = "Hoja 1")
+
+n \<- 20
+
+
+# 1. Renombrar las columnas----
+DATA$x <- DATA$`Tasa de interes`
+DATA$y <- DATA$`Tasa de ahorro`
+
+# 2. Estimación automática inicial (lm y summary)----
+
+modelo \<- lm(`Tasa de ahorro` \~ `Tasa de interes`, data = DATA[1:n, ]) summary(modelo)
+
+
+
+# 3. Construcción de columnas manuales, estimaciones y residuos----
+DATA <- DATA |> dplyr::mutate(
+  x_2           = x^2,
+  x_XPRO        = (x - mean(x)),
+  y_YPRO        = (y - mean(y)),
+  x_XPRO_y_YPRO = (x - mean(x)) * (y - mean(y)),
+  x_XPRO_2      = (x - mean(x))^2,
+  y_EST         = (2.183 + (1.717 * x)),
+  ERROR         = (y - y_EST),
+  ERROR_2       = ERROR^2,
+  SSR_i         = (y_EST - mean(y))^2,
+  SSE_i         = (y - y_EST)^2,         # <--- Aquí tienes SSE individual (idéntico a ERROR_2)
+  SST_i         = (y - mean(y))^2
+)
+
+
+# 4. CÁLCULO MANUAL DE BETAS USANDO sum(DATA$VECTOR)----
+
+# Coeficiente de la Pendiente (Beta 1) -> Celda H29 en Excel
+beta_1 <- sum(DATA$x_XPRO_y_YPRO) / sum(DATA$x_XPRO_2)
+
+# Coeficiente del Intercepto (Beta 0) -> Celda H26 en Excel
+beta_0 <- mean(DATA$y) - (beta_1 * mean(DATA$x))
+
+cat("Beta 0 (Intercepto):", beta_0, "\n")
+cat("Beta 1 (Pendiente):", beta_1, "\n\n")
+
+
+# 5. SUMAS DE CUADRADOS Y GRADOS DE LIBERTAD (TABLA ANOVA)----
+n <- nrow(DATA)
+
+# Grados de libertad
+gl_reg <- 1
+gl_res <- n - 2
+gl_tot <- n - 1
+
+# Sumas de cuadrados
+SSR <- sum(DATA$SSR_i)
+SSE <- sum(DATA$SSE_i)
+SST <- sum(DATA$SST_i)
+
+
+# Cuadros medios / Medias cuadráticas
+CMR <- SSR / gl_reg
+CME <- SSE / gl_res
+CMT <- SST / gl_tot
+
+# Estadístico F y su p-valor
+F_stat  <- CMR / CME
+p_val_F <- 1 - pf(F_stat, gl_reg, gl_res)
+
+# Coeficiente de determinación R^2
+r2 <- 1 - (SSE / SST)
+
+tabla_anova <- data.frame(
+  Fuente  = c("SSR (Regresión)", "SSE (Error)", "SST (Total)"),
+  SS      = c(SSR, SSE, SST),
+  GL      = c(gl_reg, gl_res, gl_tot),
+  CM      = c(CMR, CME, CMT),
+  F_calc  = c(F_stat, NA, NA),
+  p_valor = c(p_val_F, NA, NA)
+)
+
+print(tabla_anova)
+
+
+# 6. VARIANZAS, DESVIACIONES Y PRUEBAS t INDIVIDUALES----
+
+# Varianza y desviación estándar del error del modelo
+s2 <- CME
+s  <- sqrt(s2)
+
+var_beta_0 <- s2 * (sum(DATA$x_2) / (n * sum(DATA$x_XPRO_2)))
+se_beta_0  <- sqrt(var_beta_0)
+t_beta_0   <- beta_0 / se_beta_0
+p_beta_0   <- 2 * (1 - pt(abs(t_beta_0), df = gl_res))
+
+var_beta_1 <- s2 / sum(DATA$x_XPRO_2)
+se_beta_1  <- sqrt(var_beta_1)
+t_beta_1   <- beta_1 / se_beta_1
+p_beta_1   <- 2 * (1 - pt(abs(t_beta_1), df = gl_res))
+
+
+cat("Varianza del Error (s^2):", round(s2, 4), "\n")
+cat("Desviación Estándar (s) :", round(s, 4), "\n")
+cat("R-cuadrado (R^2)        :", round(r2, 4), "\n")
+cat("F-Estadístico           :", round(F_stat, 4), "\n")
+cat("p-valor de F            :", format.pval(p_val_F), "\n\n")
+
+tabla_coeficientes <- data.frame(
+  Coeficiente = c("Intercepto (b0)", "Pendiente (b1)"),
+  Estimacion  = c(beta_0, beta_1),
+  Varianza    = c(var_beta_0, var_beta_1),
+  Error_Std   = c(se_beta_0, se_beta_1),
+  t_valor     = c(t_beta_0, t_beta_1),
+  p_valor     = c(p_beta_0, p_beta_1)
+)
+
+print(tabla_coeficientes)
+
