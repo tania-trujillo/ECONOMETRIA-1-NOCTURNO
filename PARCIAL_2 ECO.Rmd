@@ -1,0 +1,64 @@
+---
+title: "PARCIAL_2 ECO"
+output: html_document
+---
+###### 
+
+# UNIVERSIDAD DEL QUINDÍO
+
+# PROGRAMA DE ECONOMIA
+
+# ECONOMETRÍA I
+
+###### 
+
+################################################################### 
+
+# BY: Tania Trujillo Escalante- David Patiño
+
+## Parcial 2 ----
+
+# 1. Cargar librerías necesarias---- 
+library(haven)    # Para leer archivos .dta de Stata
+library(dplyr)    # Para filtrar y manipular datos
+library(writexl) # Para exportar la base filtrada a Excel
+
+# 2. Importar la base y ver qué años existen -----
+datos <- read_dta("C:/Users/Tata/Desktop/TRABAJO ECONOMETRIA/ECONOMETRIA-1-NOCTURNO/PARCIAL_2/nls_panel.dta")
+table(datos$year) # Revisa los años disponibles
+
+# 3. Filtrar únicamente el año 1988 (88) y elegir las variables de la Opción 3 ----
+datos_1988 <- datos %>% 
+  filter(year == 88) %>% 
+  select(lwage, exper, tenure, collgrad, union)
+
+# 4. Estadísticos descriptivos en R (Posición, Centro y Dispersión) ----
+## Tabla consolidada lista para pasar a tu informe en Word
+tabla_descriptivos <- data.frame(
+  Variable = names(datos_1988),
+  Media_Centro = sapply(datos_1988, mean, na.rm = TRUE),
+  Mediana_Centro = sapply(datos_1988, median, na.rm = TRUE),
+  Minimo_Posicion = sapply(datos_1988, min, na.rm = TRUE),
+  Q1_Posicion = sapply(datos_1988, quantile, probs = 0.25, na.rm = TRUE),
+  Q3_Posicion = sapply(datos_1988, quantile, probs = 0.75, na.rm = TRUE),
+  Maximo_Posicion = sapply(datos_1988, max, na.rm = TRUE),
+  Desv_Est_Dispersion = sapply(datos_1988, sd, na.rm = TRUE),
+  Varianza_Dispersion = sapply(datos_1988, var, na.rm = TRUE),
+  IQR_Dispersion = sapply(datos_1988, IQR, na.rm = TRUE)
+)
+print(tabla_descriptivos, digits = 4)
+
+# 5. Exportar la base filtrada a Excel y abrirla automáticamente ----
+write_xlsx(datos_1988, "datos_1988_opcion3.xlsx")
+
+# 6. Estimar la regresión en R y ver contrastes de bondad de ajuste ----
+## EL PLANTEAMIENTO DE LA HIPÓTESIS
+### Modelo: lwage = Beta_0 + Beta_1(exper) + Beta_2(tenure) + Beta_3(collgrad) + Beta_4(union)
+### Hipótesis Nula (H0): El regresor NO tiene efecto sobre el salario (Beta_j = 0)
+### Hipótesis Alternativa (H1): El regresor SÍ tiene efecto sobre el salario (Beta_j != 0)
+
+#### CÓDIGO EN R PARA ESTIMAR EL MODELO
+modelo_r <- lm(lwage ~ exper + tenure + collgrad + union, data = datos_1988)
+
+#### EL CONTRASTE DE LA HIPÓTESIS
+summary(modelo_r)

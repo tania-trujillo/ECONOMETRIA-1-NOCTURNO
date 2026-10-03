@@ -17,7 +17,7 @@ output: html_document
 
 ################################################################### 
 
-# BY: tania Trujillo Escalante- David Patiño
+# BY: Tania Trujillo Escalante- David Patiño
 
 ## Quizz ----
 
