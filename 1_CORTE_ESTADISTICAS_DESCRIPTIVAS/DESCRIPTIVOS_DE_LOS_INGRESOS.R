@@ -41,8 +41,7 @@ library("rstatix")
 library("descr")
 library("splitstackshape")
 library("e1071")
-library(dplyr)
-library(tidyr)
+
 
 ## Cargamos la base de datos
 
