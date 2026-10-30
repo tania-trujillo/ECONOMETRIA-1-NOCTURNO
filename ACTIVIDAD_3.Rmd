@@ -1,0 +1,42 @@
+---
+title: "ACTIVIDAD_3"
+output: html_document
+---
+
+###### 
+
+# UNIVERSIDAD DEL QUINDÍO
+
+# PROGRAMA DE ECONOMIA
+
+# ECONOMETRÍA I
+
+###### 
+
+################################################################### 
+
+# BY: Tania Trujillo Escalante
+
+##  Actividad 3 ----
+
+
+# Datos
+Consumo   <- c(1673,1688,1666,1735,1749,1756,1815,1867,1948,2048,2128,2165,2257,2316,2324)
+Ingreso   <- c(1839,1844,1831,1881,1883,1910,1969,2016,2126,2239,2336,2404,2487,2535,2595)
+Tendencia <- 1:15
+
+# Modelo MCO
+modelo <- lm(Consumo ~ Ingreso + Tendencia)
+
+# Puntos 1, 2, 6: coeficientes, errores estándar, t y valor p
+summary(modelo)
+
+# Punto 3: valores ajustados y residuos
+fitted(modelo)
+resid(modelo)
+
+# Punto 4: ANOVA
+anova(modelo)
+
+# Punto 5: sigma^2
+sum(resid(modelo)^2) / modelo$df.residual
